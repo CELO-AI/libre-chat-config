@@ -1,0 +1,88 @@
+# LibreChat Configuration for Enterprise Deployment with OpenRouter
+version: 1.1.7
+
+# Cache settings for better performance
+cache: true
+
+# Model Specifications - Simplified for non-technical users
+modelSpecs:
+  enforce: true  # Strictly limit to these models only
+  prioritize: true
+  list:
+    - name: "anthropic/claude-sonnet-4.5"
+      label: "Claude Sonnet 4.5 (Recommended)"
+      description: "Best for complex tasks and analysis"
+      default: true
+    - name: "google/gemini-2.5-flash"
+      label: "Gemini 2.5 Flash"
+      description: "Fast and efficient for everyday questions"
+    - name: "openai/gpt-4o"
+      label: "GPT-4o"
+      description: "Excellent for coding and technical tasks"
+    - name: "x-ai/grok-3"
+      label: "Grok 3"
+      description: "Strong reasoning and real-time knowledge"
+    - name: "deepseek/deepseek-v3"
+      label: "DeepSeek V3"
+      description: "Cost-effective for coding and analysis"
+
+# Interface customization
+interface:
+  modelSelect: true  # Allow users to choose from your curated list
+  parameters: false  # Hide technical parameters
+  sidePanel: true
+  presets: false  # Keep it simple
+
+# File upload configuration
+fileConfig:
+  endpoints:
+    openAI:
+      disabled: false
+      fileLimit: 5
+      fileSizeLimit: 10  # MB
+      totalSizeLimit: 50  # MB
+    default:
+      totalSizeLimit: 50
+
+# Rate limiting to control costs
+rateLimits:
+  fileUploads:
+    ipMax: 100
+    ipWindowInMinutes: 60
+    userMax: 50
+    userWindowInMinutes: 60
+  conversationsImport:
+    ipMax: 100
+    ipWindowInMinutes: 60
+    userMax: 50
+    userWindowInMinutes: 60
+
+# Registration and authentication
+registration:
+  socialLogins: []  # Add SSO providers here if needed: ['azure', 'github']
+  allowedDomains: ["yourcompany.com"]  # Replace with your company domain
+
+# OpenRouter Configuration
+endpoints:
+  custom:
+    - name: "OpenRouter"
+      apiKey: "${OPENROUTER_API_KEY}"
+      baseURL: "https://openrouter.ai/api/v1"
+      models:
+        default: [
+          "anthropic/claude-sonnet-4.5",
+          "google/gemini-2.5-flash",
+          "openai/gpt-4o",
+          "x-ai/grok-3",
+          "deepseek/deepseek-v3"
+        ]
+        fetch: false  # Don't fetch all available models
+      titleConvo: true
+      titleModel: "google/gemini-2.5-flash"  # Use fast, cheap model for titles
+      summarize: false
+      summaryModel: "google/gemini-2.5-flash"
+      forcePrompt: false
+      modelDisplayLabel: "OpenRouter"
+      headers:
+        "HTTP-Referer": "${DOMAIN_CLIENT}"  # OpenRouter requires this
+        "X-Title": "YourCompanyName LibreChat"  # Replace with your company name
